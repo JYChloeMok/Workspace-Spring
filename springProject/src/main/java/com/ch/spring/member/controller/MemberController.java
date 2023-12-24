@@ -1,5 +1,10 @@
 package com.ch.spring.member.controller;
 
+import java.text.DecimalFormat;
+import java.text.Format;
+import java.util.Random;
+
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,9 +16,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ch.spring.member.model.service.MemberService;
+import com.ch.spring.member.model.vo.CertVO;
 import com.ch.spring.member.model.vo.Member;
 
 import lombok.RequiredArgsConstructor;
@@ -143,18 +150,39 @@ public class MemberController {
 	}
 	
 	@PostMapping("mail")
-	public String mail(String mail, HttpServletRequest request) {
+	public String mail(String email, HttpServletRequest request) throws MessagingException {
+		
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		
-		String ip = request.getRemoteAddr(); // 요청보낸 대상의 IP주소
+		String ip = request.getRemoteAddr();
+		
+		Random r = new Random();
+		int i = r.nextInt(100000);
+		Format f = new DecimalFormat("000000");
+		String secret = f.format(i);
+		
+		CertVO certVo = CertVO.builder().who(ip).secret(secret).build();
+		memberService.insertSecret(certVo);
+		
+		helper.setTo(email);
+		helper.setSubject("인증번호입니다");
+		helper.setText("인증번호 : " + secret);
+		sender.send(message);
+		
+		return "redirect:checkPage";
 	}
 	
-	
-	
-	
-	
-	
-	
-	
+	@ResponseBody
+	@PostMapping("check")
+	public String checkCode(String secret, HttpServletRequest request) {
+		CertVO certVo = CertVO.builder()
+							  .who(request.getRemoteAddr())
+							  .secret(secret)
+							  .build();
+		boolean result = memberService.validate(certVo);
+		return "result : " + result;
+	}
+
+
 }
