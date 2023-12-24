@@ -36,8 +36,10 @@ public class MemberController {
 	private final JavaMailSender sender;
 	
 	
+	
 	@PostMapping("login.me")
 	public ModelAndView loginMember(Member m, HttpSession session, ModelAndView mv) {
+		
 		Member loginUser = memberService.loginMember(m);
 		
 		if(loginUser != null && bCryptPasswordEncoder.matches(m.getUserPwd(), loginUser.getUserPwd())) {
@@ -69,14 +71,16 @@ public class MemberController {
 	
 	@GetMapping("logout.me")
 	public String logoutMember(HttpSession session) {
-		session.invalidate();
+		session.invalidate(); // 세션 전체 무효화
 		return "redirect:/";
 	}
+	
 	
 	@GetMapping("enrollForm.me")
 	public String enrollForm() {
 		return "member/memberEnrollForm";
 	}
+	
 	
 	@PostMapping("insert.me")
 	public String insertMember(Member m, Model model) {
@@ -89,10 +93,12 @@ public class MemberController {
 		return "common/errorPage";
 	}
 	
+	
 	@GetMapping("mypage.me")
 	public String myPage() {
 		return "member/myPage";
 	}
+	
 	
 	@PostMapping("update.me")
 	public String UpdateMember(Member m, Model model, HttpSession session) {
@@ -104,6 +110,7 @@ public class MemberController {
 		model.addAttribute("erorrMsg", "정보 수정에 실패하였습니다.");
 		return "common/errorPage";
 	}
+	
 	
 	@PostMapping("delete.me")
 	public String deleteMember(String userPwd, HttpSession session) {
@@ -122,33 +129,22 @@ public class MemberController {
 			session.setAttribute("errorMsg", "탈퇴처리 실패");
 			return "redirect:errorPage.me";
 		}
-		/*
-		if(bCryptPasswordEncoder.matches(userPwd, loginUser.getUserPwd())) {
-			if(memberService.deleteMember(loginUser.getUserId()) > 0) {
-				session.removeAttribute("loginUser");
-				session.setAttribute("alertMsg", "탈퇴가 완료되었습니다.");
-				return "redirect:/";
-			} else {
-				session.setAttribute("errorMsg", "탈퇴처리 실패");
-				return "redirect:errorPage.me";
-			}
-		} else {
-			session.setAttribute("errorMsg", "비밀번호가 일치하지 않습니다");
-			return "redirect:myPage.me";
-		}
-		*/
 	}
 	
+	
+	/**
+	 * 이메일 주소 입력받는 양식으로 포워딩
+	 */
 	@GetMapping("inputmail")
 	public String inputMail() {
 		return "member/input";
 	}
 	
-	@GetMapping("checkPage")
-	public String checkPage() {
-		return "member/check";
-	}
 	
+	/**
+	 * 이메일 입력받는 양식, 작성 후 인증번호 발급 요청 시 인증번호 입력 페이지로 리다이렉팅
+	 * @param email : 사용자가 입력한 이메일
+	 */
 	@PostMapping("mail")
 	public String mail(String email, HttpServletRequest request) throws MessagingException {
 		
@@ -173,6 +169,19 @@ public class MemberController {
 		return "redirect:checkPage";
 	}
 	
+	
+	/**
+	 * 이메일 인증번호 입력 페이지로 리다이렉팅
+	 */
+	@GetMapping("checkPage")
+	public String checkPage() {
+		return "member/check";
+	}
+	
+	
+	/**
+	 * 인증번호 입력 페이지
+	 */
 	@ResponseBody
 	@PostMapping("check")
 	public String checkCode(String secret, HttpServletRequest request) {

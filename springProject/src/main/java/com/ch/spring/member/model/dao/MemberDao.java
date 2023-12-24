@@ -3,6 +3,7 @@ package com.ch.spring.member.model.dao;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.ch.spring.member.model.vo.CertVO;
 import com.ch.spring.member.model.vo.Member;
 
 @Repository
@@ -29,6 +30,17 @@ public class MemberDao {
 	
 	public int ajaxIdCheck(SqlSessionTemplate sqlSession, String checkId) {
 		return sqlSession.selectOne("memberMapper.ajaxIdCheck", checkId);
+	}
+
+
+	public void insertSecret(SqlSessionTemplate sqlSession, CertVO certVo) {
+		sqlSession.insert("memberMapper.insertSecret", certVo);
+	}
+
+
+	public int validate(SqlSessionTemplate sqlSession, CertVO certVo) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 

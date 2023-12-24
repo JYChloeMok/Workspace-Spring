@@ -51,15 +51,13 @@ public class MemberServiceImpl implements MemberService {
 	
 	@Override
 	public void insertSecret(CertVO certVo) {
-		// TODO Auto-generated method stub
-		
+		memberDao.insertSecret(sqlSession, certVo);
 	}
 
 
 	@Override
 	public boolean validate(CertVO certVo) {
-		// TODO Auto-generated method stub
-		return false;
+		return memberDao.validate(sqlSession, certVo) > 0 ? true : false;
 	}
 	
 	
