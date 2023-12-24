@@ -1,8 +1,11 @@
 package com.ch.spring.member.controller;
 
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,14 +16,17 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ch.spring.member.model.service.MemberService;
 import com.ch.spring.member.model.vo.Member;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
+@RequiredArgsConstructor
 public class MemberController {
 
-	@Autowired
-	private MemberService memberService;
+	private final MemberService memberService;
 	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	private final JavaMailSender sender;
 	
 	
 	@PostMapping("login.me")
@@ -126,7 +132,23 @@ public class MemberController {
 		*/
 	}
 	
+	@GetMapping("inputmail")
+	public String inputMail() {
+		return "member/input";
+	}
 	
+	@GetMapping("checkPage")
+	public String checkPage() {
+		return "member/check";
+	}
+	
+	@PostMapping("mail")
+	public String mail(String mail, HttpServletRequest request) {
+		MimeMessage message = sender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+		
+		String ip = request.getRemoteAddr(); // 요청보낸 대상의 IP주소
+	}
 	
 	
 	
