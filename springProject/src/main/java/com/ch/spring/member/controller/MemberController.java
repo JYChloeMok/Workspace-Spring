@@ -96,6 +96,20 @@ public class MemberController {
 	public String deleteMember(String userPwd, HttpSession session) {
 		Member loginUser = (Member)session.getAttribute("loginUser");
 		
+		if(!(bCryptPasswordEncoder.matches(userPwd, loginUser.getUserPwd()))) {
+			session.setAttribute("errorMsg", "비밀번호가 일치하지 않습니다");
+			return "redirect:myPage.me";
+		}
+		
+		if(memberService.deleteMember(loginUser.getUserId()) > 0) {
+			session.removeAttribute("loginUser");
+			session.setAttribute("alertMsg", "탈퇴가 완료되었습니다.");
+			return "redirect:/";
+		} else {
+			session.setAttribute("errorMsg", "탈퇴처리 실패");
+			return "redirect:errorPage.me";
+		}
+		/*
 		if(bCryptPasswordEncoder.matches(userPwd, loginUser.getUserPwd())) {
 			if(memberService.deleteMember(loginUser.getUserId()) > 0) {
 				session.removeAttribute("loginUser");
@@ -109,6 +123,7 @@ public class MemberController {
 			session.setAttribute("errorMsg", "비밀번호가 일치하지 않습니다");
 			return "redirect:myPage.me";
 		}
+		*/
 	}
 	
 	
