@@ -33,21 +33,21 @@ public class NoticeServiceImpl implements NoticeService {
 	}
 
 	@Override
-	public int insertNotice(int noticeNo) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int insertNotice(Notice n) {
+		return noticeDao.insertNotice(sqlSession, n);
 	}
 
 	@Override
 	public Notice selectNotice(int noticeNo) {
-		// TODO Auto-generated method stub
-		return null;
+		return noticeDao.selectNotice(sqlSession, noticeNo);
 	}
 
+	/**
+	 * 공지사항은 Status컬럼 없으므로 그냥 삭제(DELETE)
+	 */
 	@Override
 	public int deleteNotice(int noticeNo) {
-		// TODO Auto-generated method stub
-		return 0;
+		return noticeDao.deleteNotice(sqlSession, noticeNo);
 	}
 
 	@Override
