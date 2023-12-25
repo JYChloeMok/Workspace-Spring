@@ -151,8 +151,10 @@ public class MemberController {
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		
+		// who
 		String ip = request.getRemoteAddr();
 		
+		// secret
 		Random r = new Random();
 		int i = r.nextInt(100000);
 		Format f = new DecimalFormat("000000");
