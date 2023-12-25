@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="memberMapper">
+
+	<!-- 로그인 쿼리문 / USER_ID AS userId => setter이용 / USER_ID = #{userId} => getter이용 -->
+	<select id="loginMember" parameterType="member" resultType="member">
+		SELECT
+			  USER_ID userId,
+			  USER_PWD userPwd,
+			  USER_NAME userName,
+			  EMAIL email,
+			  GENDER gender,
+			  AGE age,
+			  PHONE phone,
+			  ADDRESS address,
+			  ENROLL_DATE enrollDate,
+			  MODIFY_DATE modifyDate,
+			  STATUS status
+	     FROM
+	     	  MEMBER
+	    WHERE
+	    	  USER_ID = #{userId}
+	    	  <!-- 사용자는 DB에 암호화된 비밀번호를 알 수 없기때문에 비밀번호 조건 제거 -->
+	      AND
+	      	  STATUS = 'Y'
+	</select>
+	
+	<insert id="insertMember" parameterType="member">
+		INSERT
+		  INTO
+			   MEMBER
+			   (
+			   USER_ID,
+			   USER_PWD,
+			   USER_NAME,
+			   EMAIL,
+			   GENDER,
+			   AGE,
+			   PHONE,
+			   ADDRESS
+			   )
+		VALUES
+			   (
+			    #{userId}
+			   ,#{userPwd}
+			   ,#{userName}
+			   ,#{email}
+			   ,#{gender}
+			   ,#{age}
+			   ,#{phone}
+			   ,#{address}
+			   )
+	</insert>
+	
+	<update id="updateMember" parameterType="member">
+		UPDATE
+			   MEMBER
+		   SET
+		   	   USER_NAME = #{userName}
+		   	   ,EMAIL = #{email}
+		   	   ,AGE = #{age}
+		   	   ,PHONE = #{phone}
+		   	   ,ADDRESS = #{address}
+		   	   ,GENDER = #{gender}
+		   	   ,MODIFY_DATE = SYSDATE
+		 WHERE
+		 	   USER_ID = #{userId}
+	</update>
+	
+	<update id="deleteMember" parameterType="string">
+		update
+			   member
+		   set
+		  	   status = 'N'
+		  	   ,modify_date = sysdate
+		 where
+		 	   user_id = #{userId}
+	</update>	
+	
+	
+	<select id="ajaxIdCheck" parameterType="string" resultType="_int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   MEMBER
+		 WHERE
+		 	   USER_ID = #{checkId}
+	</select>
+	
+	
+	<insert id="insertSecret" parameterType="com.ch.spring.member.model.vo.CertVO">
+		INSERT
+			   INTO
+		  CERT
+		  	   (
+		  	   WHO,
+		  	   SECRET,
+		  	   WHEN
+		  	   )
+		VALUES
+			  (
+			  #{who},
+			  #{secret},
+			  SYSDATE
+			  )
+	</insert>
+	
+	
+	<select id="validate" parameterType="com.ch.spring.member.model.vo.CertVO" resultType="com.ch.spring.member.model.vo.CertVO">
+		SELECT
+			   WHO,
+			   SECRET,
+			   WHEN
+		  FROM
+		  	   CERT
+		 WHERE
+		 	   WHO = #{who}
+		   AND
+		 	   SECRET = #{secret}
+		   AND
+			   WHEN BETWEEN SYSDATE - 3/24/60 AND SYSDATE
+	</select>
+	
+	
+	<delete id="deleteCert" parameterType="com.ch.spring.member.model.vo.CertVO">
+		DELETE
+			   CERT
+		 WHERE
+			   WHO = #{who}
+		   AND
+			   SECRET = #{secret}
+	</delete>
+
+</mapper>
