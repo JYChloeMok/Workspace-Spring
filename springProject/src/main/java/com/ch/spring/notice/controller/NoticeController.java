@@ -71,6 +71,25 @@ public class NoticeController {
 		}
 	}
 	
+	@PostMapping("updateForm.no")
+	public ModelAndView updateForm(@RequestParam(value="cPage", defaultValue="1") int cPage, int nno, ModelAndView mv) {
+		mv.addObject("cPage", cPage)
+		  .addObject("n", noticeService.selectNotice(nno))
+		  .setViewName("notice/NoticeUpdateForm");
+		return mv;
+	}
+	
+	@PostMapping("update.no")
+	public ModelAndView updateNotice(@RequestParam(value="cPage", defaultValue="1") int cPage, Notice n, ModelAndView mv, HttpSession session) {
+		if(noticeService.updateNotice(n) > 0) {
+			session.setAttribute("alertMsg", "업데이트 성공!");
+			mv.setViewName("redirect:list.no?cPage=" + cPage);
+		} else {
+			session.setAttribute("errorMsg", "수정요청 실패..");
+			mv.setViewName("common/errorPage");
+		}
+		return mv;
+	}
 	
 	
 	

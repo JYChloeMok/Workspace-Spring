@@ -30,6 +30,10 @@ public class NoticeDao {
 	public int deleteNotice(SqlSessionTemplate sqlSession, int noticeNo) {
 		return sqlSession.delete("noticeMapper.deleteNotice", noticeNo);
 	}
+
+	public int updateNotice(SqlSessionTemplate sqlSession, Notice n) {
+		return sqlSession.update("noticeMapper.updateNotice", n);
+	}
 	
 	
 
