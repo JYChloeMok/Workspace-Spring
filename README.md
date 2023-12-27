@@ -1,6 +1,6 @@
-<p5>
+<p3>
 - Workspace-Spring<br>
-</p5>
+</p3>
 <p>
 - 스프링 수업내용 복습 및 변형<br>
 <br>
